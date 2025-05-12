@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LightSystem</string>
+    <string name="connect">Connect</string>
+    <string name="i_a">Işığı Aç</string>
+    <string name="i_kapat">Işığı Kapat</string>
+    <string name="Off" />
+    <string name="On" />
+    <string name="Connect" />
+</resources>
