@@ -7,7 +7,7 @@ BluetoothSerial SerialBT;
 
 void setup() {
     Serial.begin(115200);
-    SerialBT.begin("ESP32_LED");
+    SerialBT.begin("ESP32_LED");//asaas
 
     pinMode(RED_PIN, OUTPUT);
     pinMode(GREEN_PIN, OUTPUT);
