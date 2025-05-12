@@ -47,5 +47,12 @@
         android:max="255"
         android:layout_marginTop="16dp"
         />
+    <Button
+        android:id="@+id/emergencyBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EMERGENCY"
+        android:layout_marginTop="16dp"
+    />
 
 </LinearLayout>
