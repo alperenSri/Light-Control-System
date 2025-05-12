@@ -1,5 +1,6 @@
 #include "BluetoothSerial.h"
 BluetoothSerial SerialBT;
+// test deneme 1 2
 
 #define RED_PIN 4
 #define GREEN_PIN 2
