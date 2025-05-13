@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-import android.widget.SeekBar;
 import android.widget.Toast;
-
+import androidx.cardview.widget.CardView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -22,7 +21,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends Activity {
-
     private static final String DEVICE_NAME = "ESP32_LED";
     private static final UUID UUID_PORT = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static final int REQUEST_BLUETOOTH_CONNECT = 100;
@@ -30,9 +28,10 @@ public class MainActivity extends Activity {
     BluetoothAdapter bluetoothAdapter;
     BluetoothDevice device;
     BluetoothSocket bluetoothSocket;
-    OutputStream outputStream;
+    public static OutputStream outputStream;
 
-    Button connectBtn, redBtn, greenBtn, blueBtn, offBtn;
+    private Button connectBtn, emergencyBtn;
+    private CardView room1Card, room2Card, room3Card;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
@@ -40,42 +39,49 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        connectBtn = findViewById(R.id.connectBtn);
-        redBtn = findViewById(R.id.redBtn);
-        greenBtn = findViewById(R.id.greenBtn);
-        blueBtn = findViewById(R.id.blueBtn);
-        offBtn = findViewById(R.id.offBtn);
-
+        // Initialize Bluetooth
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        SeekBar brightnessSeekBar = findViewById(R.id.brightnessSeekBar);
+        // Initialize views
+        connectBtn = findViewById(R.id.connectBtn);
+        emergencyBtn = findViewById(R.id.emergencyBtn);
+        room1Card = findViewById(R.id.room1Card);
+        room2Card = findViewById(R.id.room2Card);
+        room3Card = findViewById(R.id.room3Card);
 
-        brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // 0-255 arası değer gönder
-                sendData("BRIGHT:" + progress + "\n");
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
+        // Check Bluetooth permissions
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] { android.Manifest.permission.BLUETOOTH_CONNECT },
+            ActivityCompat.requestPermissions(this,
+                    new String[] { android.Manifest.permission.BLUETOOTH_CONNECT },
                     REQUEST_BLUETOOTH_CONNECT);
         }
 
+        // Set click listeners
         connectBtn.setOnClickListener(v -> connectToBluetooth());
 
-        redBtn.setOnClickListener(v -> sendData("RED\n"));
-        greenBtn.setOnClickListener(v -> sendData("GREEN\n"));
-        blueBtn.setOnClickListener(v -> sendData("BLUE\n"));
-        offBtn.setOnClickListener(v -> sendData("OFF\n"));
+        room1Card.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RoomControlActivity.class);
+            intent.putExtra("ROOM_ID", 1);
+            intent.putExtra("ROOM_NAME", "Living Room");
+            startActivity(intent);
+        });
+
+        room2Card.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RoomControlActivity.class);
+            intent.putExtra("ROOM_ID", 2);
+            intent.putExtra("ROOM_NAME", "Bedroom");
+            startActivity(intent);
+        });
+
+        room3Card.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RoomControlActivity.class);
+            intent.putExtra("ROOM_ID", 3);
+            intent.putExtra("ROOM_NAME", "Kitchen");
+            startActivity(intent);
+        });
+
+        emergencyBtn.setOnClickListener(v -> activateEmergencyMode());
     }
 
     private void connectToBluetooth() {
@@ -113,25 +119,40 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void sendData(String data) {
-        try {
-            if (outputStream != null) {
-                outputStream.write(data.getBytes());
-                Toast.makeText(this, "Gönderildi: " + data.trim(), Toast.LENGTH_SHORT).show();
+    private void activateEmergencyMode() {
+        if (outputStream != null) {
+            try {
+                // Turn all LEDs red
+                outputStream.write("EMERGENCY\n".getBytes());
+                Toast.makeText(this, "Acil durum modu aktif", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                Toast.makeText(this, "Komut gönderilemedi", Toast.LENGTH_SHORT).show();
             }
-        } catch (IOException e) {
-            Toast.makeText(this, "Gönderim hatası", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Bluetooth bağlantısı yok", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_BLUETOOTH_CONNECT && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "İzin verildi", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "İzin reddedildi", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (bluetoothSocket != null) {
+            try {
+                bluetoothSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
