@@ -1,6 +1,7 @@
 package com.example.lightsystem;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
@@ -11,11 +12,12 @@ import android.widget.Toast;
 
 public class RoomControlActivity extends Activity {
     private TextView roomNameText;
-    private Button redBtn, greenBtn, blueBtn, offBtn, setTimerBtn;
+    private Button offBtn, setTimerBtn;
     private SeekBar brightnessSeekBar;
     private EditText timerInput;
     private Handler timerHandler;
     private int roomId;
+    private ColorPickerView colorPickerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,21 +30,23 @@ public class RoomControlActivity extends Activity {
 
         // Initialize views
         roomNameText = findViewById(R.id.roomNameText);
-        redBtn = findViewById(R.id.redBtn);
-        greenBtn = findViewById(R.id.greenBtn);
-        blueBtn = findViewById(R.id.blueBtn);
         offBtn = findViewById(R.id.offBtn);
         brightnessSeekBar = findViewById(R.id.brightnessSeekBar);
         timerInput = findViewById(R.id.timerInput);
         setTimerBtn = findViewById(R.id.setTimerBtn);
+        colorPickerView = findViewById(R.id.colorPickerView);
 
         roomNameText.setText(roomName);
         timerHandler = new Handler();
 
-        // Set click listeners
-        redBtn.setOnClickListener(v -> sendCommand("RED" + roomId));
-        greenBtn.setOnClickListener(v -> sendCommand("GREEN" + roomId));
-        blueBtn.setOnClickListener(v -> sendCommand("BLUE" + roomId));
+        // Set color picker listener
+        colorPickerView.setOnColorSelectedListener(color -> {
+            int red = Color.red(color);
+            int green = Color.green(color);
+            int blue = Color.blue(color);
+            sendCommand(String.format("RGB:%d:%d:%d:%d", red, green, blue, roomId));
+        });
+
         offBtn.setOnClickListener(v -> sendCommand("OFF" + roomId));
 
         brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

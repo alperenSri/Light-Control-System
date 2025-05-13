@@ -21,13 +21,16 @@ struct RoomLED {
     int greenPin;
     int bluePin;
     int currentBrightness;
-    String currentColor;
+    int currentRed;
+    int currentGreen;
+    int currentBlue;
+    bool isOn;
 };
 
 RoomLED rooms[3] = {
-    {ROOM1_RED_PIN, ROOM1_GREEN_PIN, ROOM1_BLUE_PIN, 255, "OFF"},
-    {ROOM2_RED_PIN, ROOM2_GREEN_PIN, ROOM2_BLUE_PIN, 255, "OFF"},
-    {ROOM3_RED_PIN, ROOM3_GREEN_PIN, ROOM3_BLUE_PIN, 255, "OFF"}
+    {ROOM1_RED_PIN, ROOM1_GREEN_PIN, ROOM1_BLUE_PIN, 255, 255, 255, 255, false},
+    {ROOM2_RED_PIN, ROOM2_GREEN_PIN, ROOM2_BLUE_PIN, 255, 255, 255, 255, false},
+    {ROOM3_RED_PIN, ROOM3_GREEN_PIN, ROOM3_BLUE_PIN, 255, 255, 255, 255, false}
 };
 
 bool emergencyMode = false;
@@ -55,26 +58,24 @@ void updateLED(int roomIndex) {
     if (emergencyMode) return;
 
     RoomLED &room = rooms[roomIndex];
-    if (room.currentColor == "OFF") {
+    if (!room.isOn) {
         analogWrite(room.redPin, 255);
         analogWrite(room.greenPin, 255);
         analogWrite(room.bluePin, 255);
     } else {
         int brightness = map(room.currentBrightness, 0, 255, 255, 0);
+        int redValue = map(room.currentRed, 0, 255, 255, 0);
+        int greenValue = map(room.currentGreen, 0, 255, 255, 0);
+        int blueValue = map(room.currentBlue, 0, 255, 255, 0);
         
-        if (room.currentColor == "RED") {
-            analogWrite(room.redPin, brightness);
-            analogWrite(room.greenPin, 255);
-            analogWrite(room.bluePin, 255);
-        } else if (room.currentColor == "GREEN") {
-            analogWrite(room.redPin, 255);
-            analogWrite(room.greenPin, brightness);
-            analogWrite(room.bluePin, 255);
-        } else if (room.currentColor == "BLUE") {
-            analogWrite(room.redPin, 255);
-            analogWrite(room.greenPin, 255);
-            analogWrite(room.bluePin, brightness);
-        }
+        // Apply brightness to RGB values
+        redValue = map(redValue, 0, 255, 255, brightness);
+        greenValue = map(greenValue, 0, 255, 255, brightness);
+        blueValue = map(blueValue, 0, 255, 255, brightness);
+        
+        analogWrite(room.redPin, redValue);
+        analogWrite(room.greenPin, greenValue);
+        analogWrite(room.bluePin, blueValue);
     }
 }
 
@@ -116,10 +117,26 @@ void loop() {
             // Handle room-specific commands
             if (cmd.endsWith("1") || cmd.endsWith("2") || cmd.endsWith("3")) {
                 int roomIndex = (cmd.charAt(cmd.length() - 1) - '1');
-                String command = cmd.substring(0, cmd.length() - 1);
-
-                if (command == "RED" || command == "GREEN" || command == "BLUE" || command == "OFF") {
-                    rooms[roomIndex].currentColor = command;
+                
+                if (cmd.startsWith("RGB:")) {
+                    // Parse RGB values: RGB:red:green:blue:roomId
+                    int firstColon = cmd.indexOf(':');
+                    int secondColon = cmd.indexOf(':', firstColon + 1);
+                    int thirdColon = cmd.indexOf(':', secondColon + 1);
+                    
+                    if (firstColon != -1 && secondColon != -1 && thirdColon != -1) {
+                        int red = cmd.substring(firstColon + 1, secondColon).toInt();
+                        int green = cmd.substring(secondColon + 1, thirdColon).toInt();
+                        int blue = cmd.substring(thirdColon + 1, cmd.length() - 2).toInt();
+                        
+                        rooms[roomIndex].currentRed = red;
+                        rooms[roomIndex].currentGreen = green;
+                        rooms[roomIndex].currentBlue = blue;
+                        rooms[roomIndex].isOn = true;
+                        updateLED(roomIndex);
+                    }
+                } else if (cmd.startsWith("OFF")) {
+                    rooms[roomIndex].isOn = false;
                     updateLED(roomIndex);
                 }
             } else if (cmd.startsWith("BRIGHTNESS:")) {
