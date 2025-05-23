@@ -65,15 +65,18 @@ void updateLED(int roomIndex) {
         analogWrite(room.greenPin, 255);
         analogWrite(room.bluePin, 255);
     } else {
-        int brightness = map(room.currentBrightness, 0, 255, 255, 0);
-        int redValue = map(room.currentRed, 0, 255, 255, 0);
-        int greenValue = map(room.currentGreen, 0, 255, 255, 0);
-        int blueValue = map(room.currentBlue, 0, 255, 255, 0);
+        // Android'den gelen parlaklık değeri zaten tersine çevrilmiş durumda (0-255)
+        int brightness = room.currentBrightness;
         
-        // Apply brightness to RGB values
-        redValue = map(redValue, 0, 255, 255, brightness);
-        greenValue = map(greenValue, 0, 255, 255, brightness);
-        blueValue = map(blueValue, 0, 255, 255, brightness);
+        // RGB değerlerini tersine çevir (ortak anot LED için)
+        int redValue = 255 - room.currentRed;
+        int greenValue = 255 - room.currentGreen;
+        int blueValue = 255 - room.currentBlue;
+        
+        // Parlaklık değerini uygula
+        redValue = map(redValue, 0, 255, brightness, 255);
+        greenValue = map(greenValue, 0, 255, brightness, 255);
+        blueValue = map(blueValue, 0, 255, brightness, 255);
         
         analogWrite(room.redPin, redValue);
         analogWrite(room.greenPin, greenValue);
