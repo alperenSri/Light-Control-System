@@ -41,7 +41,7 @@ public class RoomControlActivity extends Activity {
 
         // Set initial brightness to maximum
         brightnessSeekBar.setProgress(255);
-        sendCommand("BRIGHTNESS:255:" + roomId);
+        sendCommand("BRIGHTNESS:0:" + roomId);
 
         // Set color picker listener
         colorPickerView.setOnColorSelectedListener(color -> {
@@ -57,7 +57,9 @@ public class RoomControlActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    sendCommand("BRIGHTNESS:" + progress + ":" + roomId);
+                    // Ortak anot LED'ler için parlaklık değerini tersine çeviriyoruz
+                    int invertedBrightness = 255 - progress;
+                    sendCommand("BRIGHTNESS:" + invertedBrightness + ":" + roomId);
                 }
             }
 
