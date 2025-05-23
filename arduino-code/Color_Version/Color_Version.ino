@@ -65,15 +65,18 @@ void updateLED(int roomIndex) {
         analogWrite(room.greenPin, 255);
         analogWrite(room.bluePin, 255);
     } else {
-        int brightness = map(room.currentBrightness, 0, 255, 255, 0);
+        // Parlaklık değerini tersine çevir (0=kapalı, 255=tam açık)
+        int brightness = 255 - room.currentBrightness;
+        
+        // RGB değerlerini ortak anot LED için tersine çevir
         int redValue = map(room.currentRed, 0, 255, 255, 0);
         int greenValue = map(room.currentGreen, 0, 255, 255, 0);
         int blueValue = map(room.currentBlue, 0, 255, 255, 0);
         
-        // Apply brightness to RGB values
-        redValue = map(redValue, 0, 255, 255, brightness);
-        greenValue = map(greenValue, 0, 255, 255, brightness);
-        blueValue = map(blueValue, 0, 255, 255, brightness);
+        // Parlaklık değerini uygula (255 = tam parlaklık, 0 = kapalı)
+        redValue = constrain(redValue + brightness, 0, 255);
+        greenValue = constrain(greenValue + brightness, 0, 255);
+        blueValue = constrain(blueValue + brightness, 0, 255);
         
         analogWrite(room.redPin, redValue);
         analogWrite(room.greenPin, greenValue);
