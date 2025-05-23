@@ -34,6 +34,8 @@ RoomLED rooms[3] = {
 };
 
 bool emergencyMode = false;
+unsigned long lastEmergencyToggle = 0;
+bool emergencyLedState = false;
 
 void setup() {
     Serial.begin(115200);
@@ -81,6 +83,8 @@ void updateLED(int roomIndex) {
 
 void activateEmergencyMode() {
     emergencyMode = true;
+    emergencyLedState = true;
+    lastEmergencyToggle = millis();
     
     // Turn all LEDs red
     for (int i = 0; i < 3; i++) {
@@ -91,6 +95,25 @@ void activateEmergencyMode() {
     
     // Activate buzzer
     digitalWrite(BUZZER_PIN, HIGH);
+}
+
+void updateEmergencyState() {
+    if (emergencyMode && (millis() - lastEmergencyToggle >= 1000)) {
+        emergencyLedState = !emergencyLedState;
+        lastEmergencyToggle = millis();
+        
+        for (int i = 0; i < 3; i++) {
+            if (emergencyLedState) {
+                analogWrite(rooms[i].redPin, 0);
+                analogWrite(rooms[i].greenPin, 255);
+                analogWrite(rooms[i].bluePin, 255);
+            } else {
+                analogWrite(rooms[i].redPin, 255);
+                analogWrite(rooms[i].greenPin, 255);
+                analogWrite(rooms[i].bluePin, 255);
+            }
+        }
+    }
 }
 
 void deactivateEmergencyMode() {
@@ -150,4 +173,6 @@ void loop() {
             }
         }
     }
+    
+    updateEmergencyState();
 }

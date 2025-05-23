@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
@@ -32,6 +34,8 @@ public class MainActivity extends Activity {
 
     private Button connectBtn, emergencyBtn;
     private CardView room1Card, room2Card, room3Card;
+    private boolean isConnected = false;
+    private boolean isEmergencyActive = false;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
@@ -58,7 +62,13 @@ public class MainActivity extends Activity {
         }
 
         // Set click listeners
-        connectBtn.setOnClickListener(v -> connectToBluetooth());
+        connectBtn.setOnClickListener(v -> {
+            if (!isConnected) {
+                connectToBluetooth();
+            } else {
+                disconnectBluetooth();
+            }
+        });
 
         room1Card.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RoomControlActivity.class);
@@ -81,7 +91,13 @@ public class MainActivity extends Activity {
             startActivity(intent);
         });
 
-        emergencyBtn.setOnClickListener(v -> activateEmergencyMode());
+        emergencyBtn.setOnClickListener(v -> {
+            if (!isEmergencyActive) {
+                activateEmergencyMode();
+            } else {
+                deactivateEmergencyMode();
+            }
+        });
     }
 
     private void connectToBluetooth() {
@@ -113,18 +129,52 @@ public class MainActivity extends Activity {
             bluetoothSocket = device.createRfcommSocketToServiceRecord(UUID_PORT);
             bluetoothSocket.connect();
             outputStream = bluetoothSocket.getOutputStream();
+            isConnected = true;
+            connectBtn.setText("Disconnect Bluetooth");
             Toast.makeText(this, "Bağlantı başarılı", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             Toast.makeText(this, "Bağlantı başarısız", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private void disconnectBluetooth() {
+        if (bluetoothSocket != null) {
+            try {
+                bluetoothSocket.close();
+                outputStream = null;
+                isConnected = false;
+                connectBtn.setText("Connect Bluetooth");
+                Toast.makeText(this, "Bluetooth bağlantısı kesildi", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                Toast.makeText(this, "Bağlantı kesme hatası", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void activateEmergencyMode() {
         if (outputStream != null) {
             try {
-                // Turn all LEDs red
                 outputStream.write("EMERGENCY\n".getBytes());
+                isEmergencyActive = true;
+                emergencyBtn.setText("STOP EMERGENCY");
+                emergencyBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2ecc71")));
                 Toast.makeText(this, "Acil durum modu aktif", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                Toast.makeText(this, "Komut gönderilemedi", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Bluetooth bağlantısı yok", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void deactivateEmergencyMode() {
+        if (outputStream != null) {
+            try {
+                outputStream.write("EMERGENCY_OFF\n".getBytes());
+                isEmergencyActive = false;
+                emergencyBtn.setText("EMERGENCY");
+                emergencyBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF3B30")));
+                Toast.makeText(this, "Acil durum modu deaktif", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 Toast.makeText(this, "Komut gönderilemedi", Toast.LENGTH_SHORT).show();
             }

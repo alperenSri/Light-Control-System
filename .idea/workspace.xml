@@ -23,8 +23,6 @@
   <component name="ChangeListManager">
     <list default="true" id="d3ecb8a8-adb0-4e83-addf-c2141289b4fc" name="Changes" comment="5 6 7">
       <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/lightsystem/RoomControlActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/lightsystem/RoomControlActivity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
