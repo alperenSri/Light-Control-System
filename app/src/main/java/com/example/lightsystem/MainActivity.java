@@ -7,7 +7,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.ColorStateList;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
