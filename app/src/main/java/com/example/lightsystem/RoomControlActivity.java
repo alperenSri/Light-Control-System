@@ -41,9 +41,9 @@ public class RoomControlActivity extends Activity {
 
         // Set color picker listener
         colorPickerView.setOnColorSelectedListener(color -> {
-            int red = Color.red(color);
-            int green = Color.green(color);
-            int blue = Color.blue(color);
+            int red = 255 - Color.red(color);
+            int green = 255 - Color.green(color);
+            int blue = 255 - Color.blue(color);
             sendCommand(String.format("RGB:%d:%d:%d:%d", red, green, blue, roomId));
         });
 
