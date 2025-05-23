@@ -39,6 +39,10 @@ public class RoomControlActivity extends Activity {
         roomNameText.setText(roomName);
         timerHandler = new Handler();
 
+        // Set initial brightness to maximum
+        brightnessSeekBar.setProgress(255);
+        sendCommand("BRIGHTNESS:255:" + roomId);
+
         // Set color picker listener
         colorPickerView.setOnColorSelectedListener(color -> {
             int red = 255 - Color.red(color);
