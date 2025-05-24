@@ -161,14 +161,24 @@ void loop() {
                 } else if (cmd.startsWith("OFF")) {
                     rooms[roomIndex].isOn = false;
                     updateLED(roomIndex);
-                }
-            } else if (cmd.startsWith("BRIGHTNESS:")) {
-                int separatorIndex = cmd.lastIndexOf(':');
-                if (separatorIndex != -1 && separatorIndex < cmd.length() - 1) {
-                    int roomIndex = (cmd.charAt(cmd.length() - 1) - '1');
-                    int brightness = cmd.substring(11, separatorIndex).toInt();
-                    rooms[roomIndex].currentBrightness = brightness;
-                    updateLED(roomIndex);
+                } else if (cmd.startsWith("BRIGHT:")) {
+                    int brightness = cmd.substring(7).toInt();
+                    brightness = constrain(brightness, 0, 255); // Limit between 0-255
+
+                    // For common anode LEDs, we need to invert the brightness
+                    // 0 = full brightness (LED ON), 255 = off (LED OFF)
+                    analogWrite(rooms[roomIndex].redPin, brightness);
+                    analogWrite(rooms[roomIndex].greenPin, brightness);
+                    analogWrite(rooms[roomIndex].bluePin, brightness);
+                } else if (cmd.startsWith("BRIGHTNESS:")) {
+                    int separatorIndex = cmd.lastIndexOf(':');
+                    if (separatorIndex != -1 && separatorIndex < cmd.length() - 1) {
+                        int roomIndex = (cmd.charAt(cmd.length() - 1) - '1');
+                        int brightness = cmd.substring(11, separatorIndex).toInt();
+                        rooms[roomIndex].currentBrightness = brightness;
+                        rooms[roomIndex].isOn = true;  // Make sure the LED is on when adjusting brightness
+                        updateLED(roomIndex);
+                    }
                 }
             }
         }

@@ -131,6 +131,7 @@ public class MainActivity extends Activity {
             outputStream = bluetoothSocket.getOutputStream();
             isConnected = true;
             connectBtn.setText("Disconnect Bluetooth");
+            connectBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#666666")));
             Toast.makeText(this, "Bağlantı başarılı", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             Toast.makeText(this, "Bağlantı başarısız", Toast.LENGTH_SHORT).show();
@@ -144,6 +145,7 @@ public class MainActivity extends Activity {
                 outputStream = null;
                 isConnected = false;
                 connectBtn.setText("Connect Bluetooth");
+                connectBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#007AFF")));
                 Toast.makeText(this, "Bluetooth bağlantısı kesildi", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 Toast.makeText(this, "Bağlantı kesme hatası", Toast.LENGTH_SHORT).show();
@@ -157,7 +159,7 @@ public class MainActivity extends Activity {
                 outputStream.write("EMERGENCY\n".getBytes());
                 isEmergencyActive = true;
                 emergencyBtn.setText("STOP EMERGENCY");
-                emergencyBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#2ecc71")));
+                emergencyBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#000000")));
                 Toast.makeText(this, "Acil durum modu aktif", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 Toast.makeText(this, "Komut gönderilemedi", Toast.LENGTH_SHORT).show();

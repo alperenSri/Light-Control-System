@@ -39,9 +39,9 @@ public class RoomControlActivity extends Activity {
         roomNameText.setText(roomName);
         timerHandler = new Handler();
 
-        // Set initial brightness to maximum
-        brightnessSeekBar.setProgress(255);
-        sendCommand("BRIGHTNESS:0:" + roomId);
+        // Set initial brightness to maximum (0 for common anode LEDs)
+        brightnessSeekBar.setProgress(0);
+        sendCommand("BRIGHTNESS:255:" + roomId);
 
         // Set color picker listener
         colorPickerView.setOnColorSelectedListener(color -> {
@@ -57,7 +57,7 @@ public class RoomControlActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    // Ortak anot LED'ler için parlaklık değerini tersine çeviriyoruz
+                    // For common anode LEDs, we need to invert the brightness
                     int invertedBrightness = 255 - progress;
                     sendCommand("BRIGHTNESS:" + invertedBrightness + ":" + roomId);
                 }

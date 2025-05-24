@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F6FA"
+    android:background="#E9ECEF"
     android:padding="16dp">
 
     <TextView
@@ -16,22 +16,14 @@
         android:textColor="#2C3E50"
         android:layout_marginBottom="16dp"/>
 
-    <androidx.cardview.widget.CardView
+    <Button
+        android:id="@+id/connectBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
-        android:layout_marginBottom="24dp">
-
-        <Button
-            android:id="@+id/connectBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Connect Bluetooth"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#007AFF"
-            android:padding="16dp"/>
-    </androidx.cardview.widget.CardView>
+        android:text="Connect Bluetooth"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#007AFF"
+        android:padding="16dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -135,21 +127,13 @@
 
     </GridLayout>
 
-    <androidx.cardview.widget.CardView
+    <Button
+        android:id="@+id/emergencyBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp"
-        android:layout_marginTop="24dp">
-
-        <Button
-            android:id="@+id/emergencyBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="EMERGENCY"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FF3B30"
-            android:padding="16dp"/>
-    </androidx.cardview.widget.CardView>
+        android:text="EMERGENCY"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#FF3B30"
+        android:padding="16dp"/>
 
 </LinearLayout>
