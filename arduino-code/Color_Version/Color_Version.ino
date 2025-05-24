@@ -6,13 +6,13 @@ BluetoothSerial SerialBT;
 #define ROOM1_GREEN_PIN 2
 #define ROOM1_BLUE_PIN 15
 
-#define ROOM2_RED_PIN 16
-#define ROOM2_GREEN_PIN 17
-#define ROOM2_BLUE_PIN 5
+#define ROOM2_RED_PIN 14
+#define ROOM2_GREEN_PIN 12
+#define ROOM2_BLUE_PIN 13
 
-#define ROOM3_RED_PIN 18
+#define ROOM3_RED_PIN 21
 #define ROOM3_GREEN_PIN 19
-#define ROOM3_BLUE_PIN 21
+#define ROOM3_BLUE_PIN 18
 
 #define BUZZER_PIN 23
 
